@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-cfgsvr
+spec:
+  selector:
+    matchLabels:
+      app: mongo-cfgsvr
+  serviceName: "mongo-cfgsvr"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: mongo-cfgsvr
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongo-cfgsvr
+          image: mongo
+          command:
+            - mongod
+            - "--configsvr"
+            - "--bind_ip_all"
+            - "--replSet"
+            - cfgrs
+            - "--port"
+            - "27017"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-cfgsvr-volume
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-cfgsvr-volume
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: mongo-retain
+        resources:
+          requests:
+            storage: 1Gi

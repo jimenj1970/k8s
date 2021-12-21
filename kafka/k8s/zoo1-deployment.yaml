@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: checklist
+    service: zoo1
+  name: zoo1
+  namespace: checklist
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: checklist
+      service: zoo1
+  template:
+    metadata:
+      labels:
+        app: checklist
+        service: zoo1
+    spec:
+      containers:
+        - env:
+            - name: ZOO_MY_ID
+              value: "1"
+            - name: ZOO_SERVERS
+              value: "server.1=0.0.0.0:2888:3888;2181 server.2=zoo2:2888:3888;2181"
+          image: zookeeper
+          name: api
+          ports:
+            - containerPort: 2181
+            - containerPort: 2888
+            - containerPort: 3888
+            - containerPort: 8080
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zoo1
+  labels:
+    app: checklist
+    service: zoo1
+  namespace: checklist
+spec:
+  ports:
+    - name: zoo1
+      port: 2188
+      targetPort: 2188
+    - name: "2888"
+      port: 2888
+      targetPort: 2888
+    - name: "3888"
+      port: 3888
+      targetPort: 3888
+    - name: "8080"
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: checklist
+    service: zoo1

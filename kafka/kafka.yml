@@ -1,0 +1,89 @@
+version: "3.2"
+
+services:
+  zoo1:
+    image: zookeeper
+    restart: always
+    hostname: zoo1
+    ports:
+      - target: 2181
+        published: 2181
+        protocol: tcp
+        mode: host
+      - target: 8080
+        published: 8080
+        protocol: tcp
+        mode: host
+    #      - 2181:2181
+    #      - 8080:8080
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_SERVERS: server.1=0.0.0.0:2888:3888;2181 server.2=zoo2:2888:3888;2181 # server.3=zoo3:2888:3888;2181
+
+  zoo2:
+    image: zookeeper
+    restart: always
+    hostname: zoo2
+    ports:
+      - target: 2181
+        published: 2182
+        protocol: tcp
+        mode: host
+      - target: 8080
+        published: 8081
+        protocol: tcp
+        mode: host
+    #      - 2182:2181
+    #      - 8081:8080
+    environment:
+      ZOO_MY_ID: 2
+      ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=0.0.0.0:2888:3888;2181 # server.3=zoo3:2888:3888;2181
+
+  # zoo3:
+  #   image: zookeeper
+  #   restart: always
+  #   hostname: zoo3
+  #   ports:
+  #     - 2183:2181
+  #   environment:
+  #     ZOO_MY_ID: 3
+  #     ZOO_SERVERS: server.1=zoo1:2888:3888;2181 server.2=zoo2:2888:3888;2181 server.3=0.0.0.0:2888:3888;2181
+
+  kafka-1:
+    image: wurstmeister/kafka:latest
+    ports:
+      - target: 29091
+        published: 29091
+        protocol: tcp
+        mode: host
+    environment:
+      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+      KAFKA_ZOOKEEPER_CONNECT: zoo1:2181,zoo2:2182
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9091,OUTSIDE://kafka-svr1:29091
+      KAFKA_LISTENERS: INSIDE://:9091,OUTSIDE://:29091
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  kafka-2:
+    image: wurstmeister/kafka:latest
+    ports:
+      - target: 29092
+        published: 29092
+        protocol: tcp
+        mode: host
+    environment:
+      HOSTNAME_COMMAND: "docker info | grep ^Name: | cut -d' ' -f 2"
+      KAFKA_ZOOKEEPER_CONNECT: zoo1:2181,zoo2:2182
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INSIDE:PLAINTEXT,OUTSIDE:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: INSIDE://:9092,OUTSIDE://kafka-svr2:29092
+      KAFKA_LISTENERS: INSIDE://:9092,OUTSIDE://:29092
+      KAFKA_INTER_BROKER_LISTENER_NAME: INSIDE
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+networks:
+  kafka_default:
+    driver: overlay
+    attachable: true

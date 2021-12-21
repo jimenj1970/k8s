@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-cfgsvr
+  labels:
+    app: mongo-cfgsvr
+spec:
+  ports:
+    - name: mongo-cfgsvr
+      port: 27017
+      targetPort: 27017
+  clusterIP: None
+  selector:
+    app: mongo-cfgsvr

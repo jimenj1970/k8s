@@ -1,0 +1,51 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: checklist-ingress
+  namespace: checklist
+spec:
+  rules:
+    - host: checklist.local
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: ui
+                port:
+                  number: 80
+          - pathType: Prefix
+            path: /adminer
+            backend:
+              service:
+                name: adminer
+                port:
+                  number: 8080
+          - pathType: Prefix
+            path: /api
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8000
+    - host: transactions.api.checklist.local
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8000
+    - host: todos.api.checklist.local
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8000

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-rs1
+  labels:
+    app: mongo-rs1
+spec:
+  ports:
+    - name: mongo-rs1
+      port: 27017
+      targetPort: 27017
+  clusterIP: None
+  selector:
+    app: mongo-rs1

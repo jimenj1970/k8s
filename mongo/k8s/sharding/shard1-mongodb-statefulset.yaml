@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-shard1svr
+spec:
+  selector:
+    matchLabels:
+      app: mongo-shard1
+  serviceName: "mongo-shard1"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: mongo-shard1
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongo-shard1svr
+          image: mongo
+          command:
+            - mongod
+            - "--shardsvr"
+            - "--bind_ip_all"
+            - "--replSet"
+            - shard1rs
+            - "--port"
+            - "27017"
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-shard1-volume
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-shard1-volume
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

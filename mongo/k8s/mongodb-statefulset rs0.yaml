@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-rs0
+spec:
+  selector:
+    matchLabels:
+      app: mongo-rs0
+  serviceName: "mongo-rs0"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: mongo-rs0
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: mongo-rs0
+          image: mongo
+          command:
+            - mongod
+            - "--bind_ip_all"
+            - "--replSet"
+            - rs0
+          ports:
+            - containerPort: 27017
+          volumeMounts:
+            - name: mongo-rs0-volume
+              mountPath: /data/db
+  volumeClaimTemplates:
+    - metadata:
+        name: mongo-rs0-volume
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 1Gi

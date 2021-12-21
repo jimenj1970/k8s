@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd:
+      C:\Users\Javier\Google Drive\dev\docker\microservice\kompose-windows-amd64.exe
+      convert -f .\stack.yml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: sms
+  name: sms
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: sms
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd:
+          C:\Users\Javier\Google Drive\dev\docker\microservice\kompose-windows-amd64.exe
+          convert -f .\stack.yml
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/frontend: "true"
+        io.kompose.service: sms
+    spec:
+      containers:
+        - image: jimenj1970/checklist-sms:latest
+          imagePullPolicy: ""
+          name: sms
+          resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes: null
+status: {}

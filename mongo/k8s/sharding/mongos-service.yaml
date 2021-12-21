@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongos
+  labels:
+    app: mongos
+spec:
+  type: LoadBalancer
+  ports:
+    - name: mongos
+      port: 27017
+      targetPort: 27017
+  selector:
+    app: mongos

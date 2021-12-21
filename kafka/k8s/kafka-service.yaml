@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: checklist
+    service: kafkaApp
+  name: kafka
+  namespace: checklist
+spec:
+  type: LoadBalancer
+  ports:
+    - name: service
+      port: 9094
+      targetPort: 9092
+      protocol: TCP
+  selector:
+    app: checklist
+    service: kafkaApp

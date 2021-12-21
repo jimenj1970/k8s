@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd:
+      C:\Users\Javier\Google Drive\dev\docker\microservice\kompose-windows-amd64.exe
+      convert -f .\stack.yml
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: api
+  name: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: api
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd:
+          C:\Users\Javier\Google Drive\dev\docker\microservice\kompose-windows-amd64.exe
+          convert -f .\stack.yml
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/backend: "true"
+        io.kompose.network/frontend: "true"
+        io.kompose.service: api
+    spec:
+      containers:
+        - env:
+            - name: CHECKLIST_DB_IPADDRESS
+              value: transactions.mysql.checklist.local
+            - name: CHECKLIST_DB_PORT
+              value: "3306"
+            - name: CHECKLIST_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-user
+            - name: CHECKLIST_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-secret
+                  key: mysql-password
+          image: jimenj1970/checklist-api:latest
+          imagePullPolicy: ""
+          name: api
+          ports:
+            - containerPort: 8001
+          resources: {}
+      restartPolicy: Always
+      serviceAccountName: ""
+status: {}

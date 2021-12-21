@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: checklist-db-data-pvc
+  namespace: checklist
+  labels:
+    app: checklist
+    service: db
+spec:
+  storageClassName: manual
+  accessModes:
+    - ReadWriteOnce
+  volumeName: checklist-db-data-pv
+  resources:
+    requests:
+      storage: 10Gi
